@@ -14,11 +14,23 @@ const detailsTitle = document.querySelector("#details-title");
 const detailsDescription = document.querySelector("#details-description");
 const detailsNumber = document.querySelector("#details-number");
 
-function selectCard(card) {
+const initialTitle = detailsTitle.textContent;
+const initialDescription = detailsDescription.textContent;
+const initialNumber = detailsNumber.textContent;
+
+function clearSelection() {
   cards.forEach((item) => {
     item.classList.remove("collection-card--selected");
     item.setAttribute("aria-pressed", "false");
   });
+
+  detailsTitle.textContent = initialTitle;
+  detailsDescription.textContent = initialDescription;
+  detailsNumber.textContent = initialNumber;
+}
+
+function selectCard(card) {
+  clearSelection();
 
   card.classList.add("collection-card--selected");
   card.setAttribute("aria-pressed", "true");
@@ -47,6 +59,42 @@ document.querySelectorAll(".total-count").forEach((element) => {
 // Этап 4. Найдите кнопки фильтров.
 // Показывайте подходящие карточки, обновляйте активную кнопку и счетчик.
 // Учтите случай, когда новый фильтр скрывает выбранную карточку.
+
+const filterButtons = document.querySelectorAll(".filter-button");
+const visibleCount = document.querySelector("#visible-count");
+
+function applyFilter(filter) {
+  filterButtons.forEach((button) => {
+    const isActive = button.dataset.filter === filter;
+    button.classList.toggle("filter-button--active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  let count = 0;
+
+  cards.forEach((card) => {
+    const isVisible = filter === "all" || card.dataset.category === filter;
+    card.classList.toggle("collection-card--hidden", !isVisible);
+
+    if (isVisible) {
+      count++;
+    }
+  });
+
+  visibleCount.textContent = count;
+
+  const selectedCard = document.querySelector(".collection-card--selected");
+
+  if (selectedCard && selectedCard.classList.contains("collection-card--hidden")) {
+    clearSelection();
+  }
+}
+
+filterButtons.forEach((button) => {
+  button.addEventListener("click", () => applyFilter(button.dataset.filter));
+});
+
+applyFilter("all");
 
 // Этап 5. Реализуйте случайный выбор среди видимых карточек.
 // Затем реализуйте полный сброс интерфейса.
