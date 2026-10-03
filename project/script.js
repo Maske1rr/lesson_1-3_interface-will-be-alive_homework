@@ -99,5 +99,35 @@ applyFilter("all");
 // Этап 5. Реализуйте случайный выбор среди видимых карточек.
 // Затем реализуйте полный сброс интерфейса.
 
+const randomButton = document.querySelector("#random-button");
+
+function selectRandomCard() {
+  const visibleCards = Array.from(cards).filter(
+    (card) => !card.classList.contains("collection-card--hidden"),
+  );
+  const otherCards = visibleCards.filter(
+    (card) => !card.classList.contains("collection-card--selected"),
+  );
+  const pool = otherCards.length > 0 ? otherCards : visibleCards;
+
+  if (pool.length === 0) {
+    return;
+  }
+
+  const randomCard = pool[Math.floor(Math.random() * pool.length)];
+  selectCard(randomCard);
+}
+
+randomButton.addEventListener("click", selectRandomCard);
+
+const resetButton = document.querySelector("#reset-button");
+
+function resetPage() {
+  applyFilter("all");
+  clearSelection();
+}
+
+resetButton.addEventListener("click", resetPage);
+
 // Этап 6. Запускайте подготовленную CSS-анимацию через класс.
 // Не дублируйте оформление в script.js.
