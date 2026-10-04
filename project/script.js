@@ -101,10 +101,12 @@ applyFilter("all");
 
 const randomButton = document.querySelector("#random-button");
 
+function getVisibleCards() {
+  return Array.from(cards).filter((card) => !card.classList.contains("collection-card--hidden"));
+}
+
 function selectRandomCard() {
-  const visibleCards = Array.from(cards).filter(
-    (card) => !card.classList.contains("collection-card--hidden"),
-  );
+  const visibleCards = getVisibleCards();
   const otherCards = visibleCards.filter(
     (card) => !card.classList.contains("collection-card--selected"),
   );
@@ -131,3 +133,36 @@ resetButton.addEventListener("click", resetPage);
 
 // Этап 6. Запускайте подготовленную CSS-анимацию через класс.
 // Не дублируйте оформление в script.js.
+
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") {
+    resetPage();
+    return;
+  }
+
+  if (event.key !== "ArrowRight" && event.key !== "ArrowLeft") {
+    return;
+  }
+
+  const visibleCards = getVisibleCards();
+
+  if (visibleCards.length === 0) {
+    return;
+  }
+
+  const currentIndex = visibleCards.findIndex((card) =>
+    card.classList.contains("collection-card--selected"),
+  );
+  const step = event.key === "ArrowRight" ? 1 : -1;
+  let nextIndex;
+
+  if (currentIndex === -1) {
+    nextIndex = step === 1 ? 0 : visibleCards.length - 1;
+  } else {
+    nextIndex = (currentIndex + step + visibleCards.length) % visibleCards.length;
+  }
+
+  const nextCard = visibleCards[nextIndex];
+  selectCard(nextCard);
+  nextCard.focus();
+});
